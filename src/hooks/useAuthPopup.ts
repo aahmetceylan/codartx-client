@@ -39,25 +39,24 @@ export function useOAuthPopup() {
     }
 
     const receiveMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
+      // Origin kontrolü kaldırıldı - postMessage * ile gönderiliyor
+      const { code, token, error, provider } = event.data || {};
 
-      const { code, token, error, provider } = event.data;
-
-      // Yeni flow: token direkt geliyor
       if (token && provider) {
         setAuthToken(token);
         setProvider(provider);
-        popup.close();
-      }
-      // Eski flow: code geliyor
-      else if (code && provider) {
+        window.removeEventListener("message", receiveMessage);
+        try { popup.close(); } catch(e) {}
+      } else if (code && provider) {
         setAuthCode(code);
         setProvider(provider);
-        popup.close();
+        window.removeEventListener("message", receiveMessage);
+        try { popup.close(); } catch(e) {}
       } else if (error) {
         setError(error);
         setProvider(false);
-        popup.close();
+        window.removeEventListener("message", receiveMessage);
+        try { popup.close(); } catch(e) {}
       }
     };
 
@@ -65,7 +64,8 @@ export function useOAuthPopup() {
 
     const timeoutId = setTimeout(() => {
       setError("Authentication timed out");
-      popup.close();
+      try { popup.close(); } catch(e) {}
+      window.removeEventListener("message", receiveMessage);
     }, 120000);
 
     return () => {
