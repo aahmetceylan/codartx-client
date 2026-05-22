@@ -4,6 +4,7 @@ interface GetFetchInstanceProps {
   url: string;
   cacheKey?: string | null;
   config?: RequestInit;
+  revalidate?: number; // saniye cinsinden cache süresi
 }
 
 type Interceptor = (
@@ -13,7 +14,6 @@ type Interceptor = (
 type ResponseInterceptor = (response: Response) => Promise<Response>;
 
 const requestInterceptors: Interceptor[] = [];
-
 const responseInterceptors: ResponseInterceptor[] = [];
 
 export const addRequestInterceptor = (interceptor: Interceptor) => {
@@ -29,6 +29,7 @@ export const getFetchInstance = async <T>({
   url,
   cacheKey = DEFAULT_CACHE_KEY,
   config = {},
+  revalidate = 300, // varsayılan 5 dakika cache
 }: GetFetchInstanceProps): Promise<T> => {
   let request: [RequestInfo, RequestInit?] = [
     API_BASE_URL + url,
@@ -42,9 +43,12 @@ export const getFetchInstance = async <T>({
         ? {
             next: {
               tags: [cacheKey],
+              revalidate: revalidate, // Cache süresi eklendi
             },
           }
-        : {}),
+        : {
+            cache: "no-store", // cacheKey yoksa cache etme
+          }),
       ...config,
     },
   ];
