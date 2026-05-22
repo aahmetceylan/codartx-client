@@ -36,25 +36,29 @@ const SocialLogin: React.FC = () => {
   const searchParams = useSearchParams();
   const referer = searchParams.get("referer");
 
-  // Yeni flow: token direkt geliyor
+  // Yeni flow: token + user direkt geliyor, backend'e tekrar gitme
   useEffect(() => {
     const loginWithToken = async () => {
       if (!authToken || !provider) return;
 
-      let url = `/auth/login/${provider}/callback?token=${authToken}`;
-      if (referer) url += `&referer=${referer}`;
-
-      const response = (await getFetchInstance({ url })) as any;
+      // Token ile user bilgisini al
+      const response = (await getFetchInstance({
+        url: `/auth/me`,
+        config: {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      })) as any;
 
       if (response?.data) {
-        const data = response?.data;
-        login(data.token, data.user);
-        push(redirect(data.user));
+        login(authToken, response.data);
+        push(redirect(response.data));
       }
     };
 
     loginWithToken();
-  }, [authToken, provider, login, push, referer, redirect]);
+  }, [authToken, provider, login, push, redirect]);
 
   // Eski flow: code geliyor
   useEffect(() => {
