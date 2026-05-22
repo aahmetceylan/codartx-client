@@ -1,12 +1,12 @@
 {
   "env": {
-    "NEXT_PUBLIC_API_BASE_URL": "https://api.codartx.com",
+    "NEXT_PUBLIC_API_BASE_URL": "https://app.codartx.com",
     "NEXT_PUBLIC_BASE_URL": "https://codartx.com",
     "NEXT_PUBLIC_TOKEN_NAME": "007-g5"
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_BASE_URL": "https://api.codartx.com",
+      "NEXT_PUBLIC_API_BASE_URL": "https://app.codartx.com",
       "NEXT_PUBLIC_BASE_URL": "https://codartx.com",
       "NEXT_PUBLIC_TOKEN_NAME": "007-g5"
     }
