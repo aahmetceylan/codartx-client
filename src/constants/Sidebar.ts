@@ -1,98 +1,69 @@
-/** @format */
+import { getFetchInstance } from "@/configs/getFetchInstance";
+import { PWAResponseType, PWAType } from "@/types";
+import type { MetadataRoute } from "next";
 
-import {
-  BookmarkIcon,
-  ClockCounterClockwiseIcon,
-  CoinIcon,
-  CoinsIcon,
-  CrownIcon,
-  GearFineIcon,
-  ListHeartIcon,
-  MoneyWavyIcon,
-  ShieldChevronIcon,
-  SignOutIcon,
-  TicketIcon,
-  UserIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { v4 as uuidv4 } from "uuid";
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  let pwaData: PWAType | null = null;
 
-export interface SidebarMenuType {
-  id: string;
-  name: string;
-  link: string;
-  icon: any;
+  try {
+    const response: PWAResponseType = await getFetchInstance({
+      url: "/pwa-manifest",
+    });
+    pwaData = response?.data ?? null;
+  } catch (error) {
+    console.error("Failed to fetch PWA manifest:", error);
+  }
+  // Default icons if API did not provide any
+  const defaultIcons = [
+    {
+      src: "/fb-logo.png",
+      sizes: "192x192",
+      type: "image/png",
+    },
+    {
+      src: "/fb-logo.png",
+      sizes: "512x512",
+      type: "image/png",
+    },
+  ];
+
+  const defaultScreenShot = [
+    {
+      src: "/desktop-screenshot.png",
+      type: "image/png",
+      form_factor: "wide",
+      sizes: "1366x768",
+      label: "Desktop görünümü",
+    },
+    {
+      src: "/mobile-screenshot.png",
+      type: "image/png",
+      form_factor: "narrow",
+      sizes: "400x800",
+      label: "Mobil görünüm",
+    },
+  ];
+
+  const images =
+    Array.isArray(pwaData?.icons) && pwaData.icons.length > 0
+      ? pwaData.icons
+      : defaultIcons;
+
+  const screenshots =
+    Array.isArray(pwaData?.screenshots) && pwaData.screenshots.length > 0
+      ? pwaData.screenshots
+      : defaultScreenShot;
+
+  return {
+    name: pwaData?.title || "NextPWA",
+    short_name: pwaData?.title || "NextPWA",
+    description: pwaData?.description || "",
+    start_url: "/",
+    display: "standalone",
+    background_color: pwaData?.background_color || "#ffffff",
+    theme_color: pwaData?.theme_color || "#000000",
+    icons: images,
+    screenshots: screenshots,
+    id: "/",
+  };
 }
-export const _SIDEBAR_MENU: SidebarMenuType[] = [
-  {
-    id: uuidv4(),
-    name: "Profile",
-    link: "/dashboard/profile",
-    icon: UserIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "History",
-    link: "/dashboard/history",
-    icon: ClockCounterClockwiseIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Favorites",
-    link: "/dashboard/favorites",
-    icon: ListHeartIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Notifications",
-    link: "/dashboard/notifications",
-    icon: BookmarkIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Badges",
-    link: "/dashboard/badges",
-    icon: ShieldChevronIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Leaderboard",
-    link: "/dashboard/leaderboard",
-    icon: CrownIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Support Tickets",
-    link: "/dashboard/supports",
-    icon: TicketIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Coin History",
-    link: "/dashboard/coin-history",
-    icon: CoinIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Withdraw",
-    link: "/dashboard/withdraw",
-    icon: MoneyWavyIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Buy Coins",
-    link: "/dashboard/buy-coin",
-    icon: CoinsIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Invite Friends",
-    link: "/dashboard/invite-friends",
-    icon: SignOutIcon,
-  },
-  {
-    id: uuidv4(),
-    name: "Settings",
-    link: "/dashboard/settings",
-    icon: GearFineIcon,
-  },
-];
