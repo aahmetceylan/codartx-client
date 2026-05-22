@@ -26,7 +26,7 @@ const providers = [
 ];
 
 const SocialLogin: React.FC = () => {
-  const { openGlobalPopup, authCode, provider } = useOAuthPopup();
+  const { openGlobalPopup, authCode, authToken, provider } = useOAuthPopup();
   const { tran } = useTranslations();
   const { redirect, authProviders } = useAuthHandler();
   const { login }: { login: (token: string, user: UserType) => void } =
@@ -36,6 +36,27 @@ const SocialLogin: React.FC = () => {
   const searchParams = useSearchParams();
   const referer = searchParams.get("referer");
 
+  // Yeni flow: token direkt geliyor
+  useEffect(() => {
+    const loginWithToken = async () => {
+      if (!authToken || !provider) return;
+
+      let url = `/auth/login/${provider}/callback?token=${authToken}`;
+      if (referer) url += `&referer=${referer}`;
+
+      const response = (await getFetchInstance({ url })) as any;
+
+      if (response?.data) {
+        const data = response?.data;
+        login(data.token, data.user);
+        push(redirect(data.user));
+      }
+    };
+
+    loginWithToken();
+  }, [authToken, provider, login, push, referer, redirect]);
+
+  // Eski flow: code geliyor
   useEffect(() => {
     const getLoginFromCode = async () => {
       if (!authCode || !provider) return;
