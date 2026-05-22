@@ -6,13 +6,13 @@ import githubIcon from "@/../public/github-logo.png";
 import google from "@/../public/google.svg";
 import linkedinIcon from "@/../public/linkedin.png";
 import xLogo from "@/../public/x-logo.png";
-import { publicInstance } from "@/configs/axiosConfig";
-import { getFetchInstance } from "@/configs/getFetchInstance";
+import { privateInstance, publicInstance } from "@/configs/axiosConfig";
 import { useAuthHandler } from "@/hooks/useAuthHandler";
 import { useOAuthPopup } from "@/hooks/useAuthPopup";
 import { useAuthStore } from "@/providers/AuthStoreProviders";
 import { useTranslations } from "@/providers/TranslationProviders";
 import { UserType } from "@/types/user";
+import Cookies from "js-cookie";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import ImageLoader from "../../components/ui/ImageLoader";
@@ -25,6 +25,8 @@ const providers = [
   { icon: githubIcon, name: "GitHub", provider: "github" },
 ];
 
+const TOKEN_NAME = process.env.NEXT_PUBLIC_TOKEN_NAME ?? "token";
+
 const SocialLogin: React.FC = () => {
   const { openGlobalPopup, authCode, authToken, provider } = useOAuthPopup();
   const { tran } = useTranslations();
@@ -36,24 +38,28 @@ const SocialLogin: React.FC = () => {
   const searchParams = useSearchParams();
   const referer = searchParams.get("referer");
 
-  // Yeni flow: token + user direkt geliyor, backend'e tekrar gitme
+  // Yeni flow: token direkt geliyor
   useEffect(() => {
     const loginWithToken = async () => {
       if (!authToken || !provider) return;
 
-      // Token ile user bilgisini al
-      const response = (await getFetchInstance({
-        url: `/auth/me`,
-        config: {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        },
-      })) as any;
+      try {
+        // Token'ı cookie'ye yaz ki privateInstance kullansın
+        Cookies.set(TOKEN_NAME, authToken);
 
-      if (response?.data) {
-        login(authToken, response.data);
-        push(redirect(response.data));
+        // User bilgisini al
+        const response = await privateInstance.get("/auth/me");
+
+        if (response?.data?.data) {
+          login(authToken, response.data.data);
+          push(redirect(response.data.data));
+        } else if (response?.data) {
+          login(authToken, response.data);
+          push(redirect(response.data));
+        }
+      } catch (error) {
+        console.error("Social login error:", error);
+        Cookies.remove(TOKEN_NAME);
       }
     };
 
@@ -65,15 +71,19 @@ const SocialLogin: React.FC = () => {
     const getLoginFromCode = async () => {
       if (!authCode || !provider) return;
 
-      let url = `/auth/login/${provider}/callback?code=${authCode}`;
-      if (referer) url += `&referer=${referer}`;
+      try {
+        let url = `/auth/login/${provider}/callback?code=${authCode}`;
+        if (referer) url += `&referer=${referer}`;
 
-      const response = (await getFetchInstance({ url })) as any;
+        const response = await publicInstance.get(url);
 
-      if (response?.data) {
-        const data = response?.data;
-        login(data.token, data.user);
-        push(redirect(data.user));
+        if (response?.data?.data) {
+          const data = response.data.data;
+          login(data.token, data.user);
+          push(redirect(data.user));
+        }
+      } catch (error) {
+        console.error("Social login code error:", error);
       }
     };
 
