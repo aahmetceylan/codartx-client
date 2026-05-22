@@ -4,14 +4,15 @@ import { useCallback, useState } from "react";
 
 export function useOAuthPopup() {
   const [authCode, setAuthCode] = useState<string | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const [provider, setProvider] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const openGlobalPopup = useCallback((url: string) => {
-    // Reset
     setError(null);
     setProvider(null);
     setAuthCode(null);
+    setAuthToken(null);
 
     const width = 500;
     const height = 600;
@@ -25,14 +26,11 @@ export function useOAuthPopup() {
     );
 
     if (!popup) {
-      setError(
-        "Popup was blocked. Please allow pop-ups for this site in Safari Settings.",
-      );
+      setError("Popup was blocked. Please allow pop-ups for this site.");
       return;
     }
 
     try {
-      // 👉 Now inject your URL AFTER popup is created
       popup.location.href = url;
     } catch (e: any) {
       setError(e);
@@ -40,13 +38,19 @@ export function useOAuthPopup() {
       return;
     }
 
-    // Message listener
     const receiveMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
 
-      const { code, error, provider } = event.data;
+      const { code, token, error, provider } = event.data;
 
-      if (code && provider) {
+      // Yeni flow: token direkt geliyor
+      if (token && provider) {
+        setAuthToken(token);
+        setProvider(provider);
+        popup.close();
+      }
+      // Eski flow: code geliyor
+      else if (code && provider) {
         setAuthCode(code);
         setProvider(provider);
         popup.close();
@@ -59,18 +63,16 @@ export function useOAuthPopup() {
 
     window.addEventListener("message", receiveMessage);
 
-    // Timeout (2 min)
     const timeoutId = setTimeout(() => {
       setError("Authentication timed out");
       popup.close();
     }, 120000);
 
-    // Cleanup function (for React)
     return () => {
       window.removeEventListener("message", receiveMessage);
       clearTimeout(timeoutId);
     };
   }, []);
 
-  return { openGlobalPopup, authCode, error, provider };
+  return { openGlobalPopup, authCode, authToken, error, provider };
 }
