@@ -33,14 +33,14 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
       type: "image/png",
       form_factor: "wide",
       sizes: "1366x768",
-      label: "Desktop view of Quizix",
+      label: "Desktop görünümü",
     },
     {
       src: "/mobile-screenshot.png",
       type: "image/png",
       form_factor: "narrow",
       sizes: "400x800",
-      label: "Mobile view of Quizix",
+      label: "Mobil görünüm",
     },
   ];
 
