@@ -146,7 +146,7 @@ const ContestJoinModal: React.FC<Props> = ({
               <p className="">{tran("Entry Fee")}</p>
             </div>
             <p className="font-medium">
-              {contest?.is_free ? "Free" : contest?.entry_fee}
+              {contest?.is_free ? tran("Free") : contest?.entry_fee}
             </p>
           </div>
         </div>
