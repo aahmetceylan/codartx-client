@@ -1,69 +1,91 @@
-import { getFetchInstance } from "@/configs/getFetchInstance";
-import { PWAResponseType, PWAType } from "@/types";
-import type { MetadataRoute } from "next";
+/** @format */
 
-export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  let pwaData: PWAType | null = null;
+import {
+  BellIcon,
+  ClockCounterClockwiseIcon,
+  CoinIcon,
+  CrownIcon,
+  GearIcon,
+  HeartIcon,
+  MedalIcon,
+  MoneyIcon,
+  ShieldCheckIcon,
+  TicketIcon,
+  UserIcon,
+  UsersThreeIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
-  try {
-    const response: PWAResponseType = await getFetchInstance({
-      url: "/pwa-manifest",
-    });
-    pwaData = response?.data ?? null;
-  } catch (error) {
-    console.error("Failed to fetch PWA manifest:", error);
-  }
-  // Default icons if API did not provide any
-  const defaultIcons = [
-    {
-      src: "/fb-logo.png",
-      sizes: "192x192",
-      type: "image/png",
-    },
-    {
-      src: "/fb-logo.png",
-      sizes: "512x512",
-      type: "image/png",
-    },
-  ];
-
-  const defaultScreenShot = [
-    {
-      src: "/desktop-screenshot.png",
-      type: "image/png",
-      form_factor: "wide",
-      sizes: "1366x768",
-      label: "Desktop görünümü",
-    },
-    {
-      src: "/mobile-screenshot.png",
-      type: "image/png",
-      form_factor: "narrow",
-      sizes: "400x800",
-      label: "Mobil görünüm",
-    },
-  ];
-
-  const images =
-    Array.isArray(pwaData?.icons) && pwaData.icons.length > 0
-      ? pwaData.icons
-      : defaultIcons;
-
-  const screenshots =
-    Array.isArray(pwaData?.screenshots) && pwaData.screenshots.length > 0
-      ? pwaData.screenshots
-      : defaultScreenShot;
-
-  return {
-    name: pwaData?.title || "NextPWA",
-    short_name: pwaData?.title || "NextPWA",
-    description: pwaData?.description || "",
-    start_url: "/",
-    display: "standalone",
-    background_color: pwaData?.background_color || "#ffffff",
-    theme_color: pwaData?.theme_color || "#000000",
-    icons: images,
-    screenshots: screenshots,
-    id: "/",
-  };
-}
+export const _SIDEBAR_MENU = [
+  {
+    id: 1,
+    name: "Profile",
+    link: "/profile",
+    icon: UserIcon,
+  },
+  {
+    id: 2,
+    name: "History",
+    link: "/profile/history",
+    icon: ClockCounterClockwiseIcon,
+  },
+  {
+    id: 3,
+    name: "Favorites",
+    link: "/profile/favorites",
+    icon: HeartIcon,
+  },
+  {
+    id: 4,
+    name: "Notifications",
+    link: "/profile/notifications",
+    icon: BellIcon,
+  },
+  {
+    id: 5,
+    name: "Badges",
+    link: "/profile/badges",
+    icon: MedalIcon,
+  },
+  {
+    id: 6,
+    name: "Leaderboard",
+    link: "/profile/leaderboard",
+    icon: CrownIcon,
+  },
+  {
+    id: 7,
+    name: "Support Ticket",
+    link: "/profile/support-ticket",
+    icon: TicketIcon,
+  },
+  {
+    id: 8,
+    name: "Coin History",
+    link: "/profile/coin-history",
+    icon: CoinIcon,
+  },
+  {
+    id: 9,
+    name: "Withdraw",
+    link: "/profile/withdraw",
+    icon: MoneyIcon,
+  },
+  {
+    id: 10,
+    name: "Buy Coins",
+    link: "/profile/buy-coins",
+    icon: ShieldCheckIcon,
+  },
+  {
+    id: 11,
+    name: "Invite Friends",
+    link: "/profile/invite-friends",
+    icon: UsersThreeIcon,
+  },
+  {
+    id: 12,
+    name: "Settings",
+    link: "/profile/settings",
+    icon: GearIcon,
+  },
+];
