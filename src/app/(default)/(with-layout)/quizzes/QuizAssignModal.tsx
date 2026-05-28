@@ -93,7 +93,7 @@ const QuizAssignModal: React.FC<Props> = ({
               <p className="">{tran("Entry Fee")}</p>
             </div>
             <p className="font-medium">
-              {quizDetails?.is_free ? "Free" : quizDetails?.point_to_pass}
+              {quizDetails?.is_free ? tran("Free") : quizDetails?.point_to_pass}
             </p>
           </div>
         </div>
