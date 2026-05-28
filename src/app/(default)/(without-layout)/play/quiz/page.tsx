@@ -15,6 +15,7 @@ import { dataEncode } from "@/utils/helper";
 import { XIcon } from "@phosphor-icons/react/dist/ssr";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "@/providers/TranslationProviders";
 import React, { useCallback, useEffect, useMemo } from "react";
 
 const QuestionPage = dynamic(() => import("../Question"), {
@@ -40,8 +41,8 @@ export default function PlayQuiz() {
   const { push } = useRouter();
   const quiz = searchParams.get(PALY_TYPE);
   const level = searchParams.get("level_slug");
-  // const [questionOrder, setQuestionOrder] = useState(1);
   const { modalRef, modal, setModal } = useClickOutside();
+  const { tran } = useTranslations();
   const { appInfo, user }: { appInfo: AppInfoType; user: UserType } =
     useAuthStore((state) => state);
 
@@ -103,6 +104,7 @@ export default function PlayQuiz() {
     }
     return 0;
   };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -155,7 +157,7 @@ export default function PlayQuiz() {
                     </span>
                   </div>
                   <Button onClick={() => setModal(true)} variant="danger">
-                    Cancel
+                    {tran("Cancel")}
                   </Button>
                 </div>
               </div>
@@ -179,7 +181,7 @@ export default function PlayQuiz() {
           <AdSense position="question_page_bottom" />
         </div>
       </div>
-      <Modal modalRef={modalRef} openModal={modal} title="Cancel Quiz">
+      <Modal modalRef={modalRef} openModal={modal} title={tran("Cancel Quiz")}>
         <Button
           onClick={() => setModal(false)}
           variant="danger-outline"
@@ -193,7 +195,7 @@ export default function PlayQuiz() {
             variant="danger"
             onClick={() => setModal(false)}
           >
-            Yes, Cancel
+            {tran("Yes, Cancel")}
           </Button>
         </div>
       </Modal>
