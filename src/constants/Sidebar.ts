@@ -1,91 +1,96 @@
 /** @format */
-
 import {
-  BellIcon,
+  BookmarkIcon,
   ClockCounterClockwiseIcon,
   CoinIcon,
+  CoinsIcon,
   CrownIcon,
-  GearIcon,
-  HeartIcon,
-  MedalIcon,
-  MoneyIcon,
-  ShieldCheckIcon,
+  GearFineIcon,
+  ListHeartIcon,
+  MoneyWavyIcon,
+  ShieldChevronIcon,
+  SignOutIcon,
   TicketIcon,
   UserIcon,
-  UsersThreeIcon,
 } from "@phosphor-icons/react/dist/ssr";
-
-export const _SIDEBAR_MENU = [
+import { v4 as uuidv4 } from "uuid";
+export interface SidebarMenuType {
+  id: string;
+  name: string;
+  link: string;
+  icon: any;
+}
+export const _SIDEBAR_MENU: SidebarMenuType[] = [
   {
-    id: 1,
+    id: uuidv4(),
     name: "Profile",
-    link: "/profile",
+    link: "/dashboard/profile",
     icon: UserIcon,
   },
   {
-    id: 2,
+    id: uuidv4(),
     name: "History",
-    link: "/profile/history",
+    link: "/dashboard/history",
     icon: ClockCounterClockwiseIcon,
   },
   {
-    id: 3,
+    id: uuidv4(),
     name: "Favorites",
-    link: "/profile/favorites",
-    icon: HeartIcon,
+    link: "/dashboard/favorites",
+    icon: ListHeartIcon,
   },
   {
-    id: 4,
+    id: uuidv4(),
     name: "Notifications",
-    link: "/profile/notifications",
-    icon: BellIcon,
+    link: "/dashboard/notifications",
+    icon: BookmarkIcon,
   },
   {
-    id: 5,
+    id: uuidv4(),
     name: "Badges",
-    link: "/profile/badges",
-    icon: MedalIcon,
+    link: "/dashboard/badges",
+    icon: ShieldChevronIcon,
   },
   {
-    id: 6,
+    id: uuidv4(),
     name: "Leaderboard",
-    link: "/profile/leaderboard",
+    link: "/dashboard/leaderboard",
     icon: CrownIcon,
   },
   {
-    id: 7,
-    name: "Support Ticket",
-    link: "/profile/support-ticket",
+    id: uuidv4(),
+    name: "Support Tickets",
+    link: "/dashboard/supports",
     icon: TicketIcon,
   },
   {
-    id: 8,
+    id: uuidv4(),
     name: "Coin History",
-    link: "/profile/coin-history",
+    link: "/dashboard/coin-history",
     icon: CoinIcon,
   },
   {
-    id: 9,
+    id: uuidv4(),
     name: "Withdraw",
-    link: "/profile/withdraw",
-    icon: MoneyIcon,
+    link: "/dashboard/withdraw",
+    icon: MoneyWavyIcon,
   },
   {
-    id: 10,
+    id: uuidv4(),
     name: "Buy Coins",
-    link: "/profile/buy-coins",
-    icon: ShieldCheckIcon,
+    link: "/dashboard/buy-coin",
+    icon: CoinsIcon,
   },
   {
-    id: 11,
+    id: uuidv4(),
     name: "Invite Friends",
-    link: "/profile/invite-friends",
-    icon: UsersThreeIcon,
+    link: "/dashboard/invite-friends",
+    icon: SignOutIcon,
   },
   {
-    id: 12,
+    id: uuidv4(),
     name: "Settings",
-    link: "/profile/settings",
-    icon: GearIcon,
+    link: "/dashboard/settings",
+    icon: GearFineIcon,
   },
 ];
